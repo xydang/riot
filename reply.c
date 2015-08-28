@@ -37,6 +37,7 @@ void replay_sta(int success,char *msg)
 //	printf("my_object.to_string()=%s\n",send_buf);
 	send(sockfd,send_buf,strlen(send_buf),0);
 	json_object_put(my_object);
+	json_object_put(sub_object);
 }
 
 void replay_sensor_list()
@@ -74,8 +75,14 @@ void replay_sensor_list()
 	strcat(send_buf,"&^!");
 //	printf("my_object.to_string()=%s\n",send_buf);
 	send(sockfd,send_buf,strlen(send_buf),0);
-	json_object_put(my_object);
 
+	json_object_put(my_object);
+	json_object_put(my_array);
+	json_object_put(sub_object);
+	json_object_put(dev0_object);
+	json_object_put(dev1_object);
+	json_object_put(dev2_object);
+	json_object_put(dev3_object);
 }
 
 void reply_update(int fd)
@@ -110,6 +117,10 @@ void reply_update(int fd)
 //      printf("my_object.to_string()=%s\n",send_buf);
         send(sockfd,send_buf,strlen(send_buf),0);
         json_object_put(my_object);
+        json_object_put(sensor_array);
+        json_object_put(t1_object);
+        json_object_put(p1_object);
+
 
 
 }
