@@ -55,11 +55,19 @@ static int i2c_read(int fd, unsigned char addr, unsigned char reg, unsigned char
     return 0;
 }
 
-void mpl3115_init(int fd)
+int mpl3115_init()
 {
+	int fd;
+
+	if ((fd = open("/dev/i2c-3", O_RDWR)) < 0){
+		perror("error openning i2c-3!\n");
+		exit(1);
+	}
 	i2c_write(fd,MPL3115_ADDR,MPL3115_CTRL_REG1,0x38);
 	i2c_write(fd,MPL3115_ADDR,MPL3115_PT_DATA_CFG,0x07);
 	i2c_write(fd,MPL3115_ADDR,MPL3115_CTRL_REG1,0x39);
+
+	return fd;
 }
 
 uint8_t mpl3115_sta(int fd)

@@ -20,10 +20,10 @@
 #define MPL3115_OFFSET_T          0x2C   //Temperature data offset
 #define MPL3115_OFFSET_H          0x2D   //Altitude data offset
 
-extern void mpl3115_init(int fd);
-extern uint8_t mpl3115_sta(int fd);
-extern int16_t mpl3115_get_press(int fd);
-extern int16_t mpl3115_get_temp(int fd);
+int mpl3115_init();
+uint8_t mpl3115_sta(int fd);
+int16_t mpl3115_get_press(int fd);
+int16_t mpl3115_get_temp(int fd);
 
 #endif
 
