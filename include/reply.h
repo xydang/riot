@@ -4,6 +4,7 @@
 void reply_heart_beat();
 void replay_sta(int success,char *msg);
 void replay_sensor_list();
+void reply_update(int fd);
 extern char send_buf[1024];
 
 

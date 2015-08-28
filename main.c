@@ -9,15 +9,11 @@
 #include <pthread.h>
 #include "tcp.h"
 #include "json-c/json.h"
+#include "reply.h"
 #include "mpl3115.h"
 
 #define SERVER "tcp.lewei50.com"
 #define PORT   9960
-#define HEART_BEAT "{\"method\":\"update\",\"gatewayNo\":\"01\",\"userkey\":\"acf941838c3045488a84399c3d9b08ee\"}&^!"
-#define RESPONSE_DEV "{\"method\": \"response\",\"result\": {\"successful\":true,\"message\": \"ok\",\"data\":[{\"id\":\"sw0\",\"value\":\"0\"},{\"id\":\"sw1\",\"value\":\"0\"},{\"id\":\"sw2\",\"value\":\"0\"},{\"id\":\"sw3\",\"value\":\"0\"}]}}&^!"
-#define RESPONSE_ACK "{\"method\":\"response\",\"result\":{\"successful\":true,\"message\":\"ok\"}}&^!"
-#define SENSOR_DAT "{\"method\": \"upload\",\"data\":[{\"Name\":\"T1\",\"Value\":\"%2.1f\"},{\"Name\":\"P1\",\"Value\":\"%d\"}]}&^!"
-
 
 void msg_handle(char *msg_buf,int len)
 {
@@ -27,7 +23,7 @@ void msg_handle(char *msg_buf,int len)
 	json_object *obj= json_object_object_get(new_obj,"f");
 	char *method=(char *)json_object_get_string(obj);
 	if(strcmp(method,"getAllSensors")==0){
-		send(sockfd,RESPONSE_DEV,strlen(RESPONSE_DEV),0);
+		replay_sensor_list();
 	}else if(strcmp(method,"updateSensor")==0){
 		json_object *dev_obj= json_object_object_get(new_obj,"p1");
 		json_object *val_obj= json_object_object_get(new_obj,"p2");
@@ -40,17 +36,17 @@ void msg_handle(char *msg_buf,int len)
 				printf("sw0 off.\n");
 			}
 		}			
-		send(sockfd,RESPONSE_ACK,strlen(RESPONSE_ACK),0);
+		replay_sta(1,"ok");
 		json_object_put(dev_obj);
 		json_object_put(val_obj);
 	}else if(strcmp(method,"writeSerial")==0){
 		json_object *val_obj= json_object_object_get(new_obj,"p1");
-		send(sockfd,RESPONSE_ACK,strlen(RESPONSE_ACK),0);
+		replay_sta(1,"ok");
 		printf("write serial:%s\n",json_object_get_string(val_obj));
 		json_object_put(val_obj);
 	}else{
 		printf("%s\n", json_object_to_json_string(new_obj));
-		send(sockfd,RESPONSE_ACK,strlen(RESPONSE_ACK),0);
+		replay_sta(1,"ok");
 	}
 	
 	json_object_put(new_obj);
@@ -87,17 +83,17 @@ void *task_send(void *arg)
 		k++;
 		if(n>30){
 			n=0;
-			send(sockfd,HEART_BEAT,strlen(HEART_BEAT),0);
+			reply_heart_beat();
 		}
 		if(k>10){
 			k=0;
-			sprintf(send_buf,SENSOR_DAT,mpl3115_get_temp(i2cfd)/10.0,mpl3115_get_press(i2cfd)/10);
-			send(sockfd,send_buf,strlen(send_buf),0);
+			reply_update(i2cfd);
 		}
 		sleep(1);	
 	}
 	close(i2cfd);
 }
+
 
 int main(int argc,char *argv[])
 {
@@ -115,11 +111,6 @@ int main(int argc,char *argv[])
 
 	return 0;
 }
-
-
-
-
-
 
 
 

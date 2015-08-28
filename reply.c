@@ -51,11 +51,11 @@ void replay_sensor_list()
 	
 	json_object_object_add(dev0_object, "id",json_object_new_string("sw0"));
 	json_object_object_add(dev0_object, "value",json_object_new_string("0"));
-	json_object_object_add(dev1_object, "id",json_object_new_string("sw0"));
+	json_object_object_add(dev1_object, "id",json_object_new_string("sw1"));
 	json_object_object_add(dev1_object, "value",json_object_new_string("0"));
-	json_object_object_add(dev2_object, "id",json_object_new_string("sw0"));
+	json_object_object_add(dev2_object, "id",json_object_new_string("sw2"));
 	json_object_object_add(dev2_object, "value",json_object_new_string("0"));
-	json_object_object_add(dev3_object, "id",json_object_new_string("sw0"));
+	json_object_object_add(dev3_object, "id",json_object_new_string("sw3"));
 	json_object_object_add(dev3_object, "value",json_object_new_string("0"));
 	
 	json_object_array_add(my_array,dev0_object);
@@ -77,4 +77,43 @@ void replay_sensor_list()
 	json_object_put(my_object);
 
 }
+
+void reply_update(int fd)
+{
+
+        char tmp_buf[8];
+	int16_t temp,press;
+
+	temp=mpl3115_get_temp(fd);
+	press=mpl3115_get_press(fd);
+        json_object *my_object = json_object_new_object();
+        json_object *sensor_array = json_object_new_array();
+        json_object *t1_object=json_object_new_object();
+        json_object *p1_object=json_object_new_object();
+
+        sprintf(tmp_buf,"%.1f",temp/10.0);
+        json_object_object_add(t1_object,"Name",json_object_new_string("T1"));
+        json_object_object_add(t1_object,"Value",json_object_new_string(tmp_buf));
+
+        sprintf(tmp_buf,"%.1f",press/10.0);
+        json_object_object_add(p1_object,"Name",json_object_new_string("P1"));
+        json_object_object_add(p1_object,"Value",json_object_new_string(tmp_buf));
+
+        json_object_array_add(sensor_array,t1_object);
+        json_object_array_add(sensor_array,p1_object);
+
+        json_object_object_add(my_object, "method",json_object_new_string("upload"));
+        json_object_object_add(my_object, "data",sensor_array);
+
+        strcpy(send_buf, json_object_to_json_string(my_object));
+        strcat(send_buf,"&^!");
+//      printf("my_object.to_string()=%s\n",send_buf);
+        send(sockfd,send_buf,strlen(send_buf),0);
+        json_object_put(my_object);
+
+
+}
+
+
+
 
