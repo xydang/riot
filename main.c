@@ -2,19 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <pthread.h>
 #include "tcp.h"
 #include "json-c/json.h"
+#include "mpl3115.h"
 
 #define SERVER "tcp.lewei50.com"
 #define PORT   9960
 #define HEART_BEAT "{\"method\":\"update\",\"gatewayNo\":\"01\",\"userkey\":\"acf941838c3045488a84399c3d9b08ee\"}&^!"
 #define RESPONSE_DEV "{\"method\": \"response\",\"result\": {\"successful\":true,\"message\": \"ok\",\"data\":[{\"id\":\"sw0\",\"value\":\"0\"},{\"id\":\"sw1\",\"value\":\"0\"},{\"id\":\"sw2\",\"value\":\"0\"},{\"id\":\"sw3\",\"value\":\"0\"}]}}&^!"
 #define RESPONSE_ACK "{\"method\":\"response\",\"result\":{\"successful\":true,\"message\":\"ok\"}}&^!"
-#define SENSOR_DAT "{\"method\": \"upload\",\"data\":[{\"Name\":\"T1\",\"Value\":\"%2.1f\"},{\"Name\":\"H1\",\"Value\":\"%3d\"}]}&^!"
+#define SENSOR_DAT "{\"method\": \"upload\",\"data\":[{\"Name\":\"T1\",\"Value\":\"%2.1f\"},{\"Name\":\"P1\",\"Value\":\"%d\"}]}&^!"
 
 
 void msg_handle(char *msg_buf,int len)
@@ -71,9 +73,15 @@ void *task_recv(void *arg)
 
 void *task_send(void *arg)
 {
-	int n=0,k=0;
+	int n=0,k=0,i2cfd;
 	char send_buf[1024];
 
+	if ((i2cfd = open("/dev/i2c-3", O_RDWR)) < 0){
+		perror("error openning i2c-3!\n");
+		exit(1);
+	}
+	mpl3115_init(i2cfd);
+	sleep(1);
 	while(1){
 		n++;
 		k++;
@@ -83,12 +91,12 @@ void *task_send(void *arg)
 		}
 		if(k>10){
 			k=0;
-			sprintf(send_buf,SENSOR_DAT,(rand()%500)/10.0,rand()%1000);
+			sprintf(send_buf,SENSOR_DAT,mpl3115_get_temp(i2cfd)/10.0,mpl3115_get_press(i2cfd)/10);
 			send(sockfd,send_buf,strlen(send_buf),0);
 		}
 		sleep(1);	
 	}
-
+	close(i2cfd);
 }
 
 int main(int argc,char *argv[])
