@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "tcp.h"
-#include "json-c/json.h"
+#include "json.h"
 
 char send_buf[1024];
 
