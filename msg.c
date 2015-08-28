@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "json-c/json.h"
+#include "json.h"
 #include "reply.h"
 
 void msg_handle(char *msg_buf,int len)
