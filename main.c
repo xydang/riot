@@ -8,6 +8,7 @@
 #include "reply.h"
 #include "mpl3115.h"
 #include "msg.h"
+#include "gpio.h"
 
 char userid[36],devno[4];
 
@@ -48,6 +49,14 @@ void *task_send(void *arg)
 	close(i2cfd);
 }
 
+void sys_init()
+{
+	gpio_init();
+	gpio_dir(GPIO4_16,1);
+	gpio_dir(GPIO4_17,1);
+	gpio_dir(GPIO4_18,1);
+	gpio_dir(GPIO4_19,1);
+}
 
 int main(int argc,char *argv[])
 {
@@ -63,14 +72,16 @@ int main(int argc,char *argv[])
 	}
 	fscanf(ffd,"userid=%s\ndevno=%s\nserver=%s\nport=%d\n",userid,devno,server,&port);	
 	fclose(ffd);
+	
+	sys_init();
 
 	sockfd=tcp_open(server,port);
 
 	pthread_create(&thread_recv,NULL,task_recv,NULL);
 	pthread_create(&thread_send,NULL,task_send,NULL);
 	
-	printf("iot server started....\n");
-	printf("server=%s\tport=%d\n",server,port);
+	printf("\niot server started....\n");
+	printf("server=%s\tport=%d\n\n",server,port);
 	while('q'!=getchar());
 	close(sockfd);
 	

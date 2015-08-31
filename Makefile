@@ -9,7 +9,7 @@ LIBS= -lpthread
 all:iot
 
 iot:
-	gcc -o iot  main.c serial.c tcp.c reply.c mpl3115.c msg.c $(LIBJSON) $(INCLUDE) $(LIBS) $(PARA)
+	gcc -o iot  main.c serial.c gpio.c tcp.c reply.c mpl3115.c msg.c $(LIBJSON) $(INCLUDE) $(LIBS) $(PARA)
 clean:
 	rm -rfv iot
 
