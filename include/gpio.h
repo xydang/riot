@@ -11,6 +11,14 @@
 #define IOMUXC_GPIO4_17 0x20E00A0
 #define IOMUXC_GPIO4_18 0x20E00A4
 #define IOMUXC_GPIO4_19 0x20E00A8
+#define IOMUXC_GPIO4_26 0x20E00FC
+#define IOMUXC_GPIO4_27 0x20E0100
+#define IOMUXC_GPIO4_31 0x20E00B8
+#define IOMUXC_GPIO5_05 0x20E00BC
+#define IOMUXC_GPIO5_06 0x20E00C0
+#define IOMUXC_GPIO5_07 0x20E00C4
+#define IOMUXC_GPIO5_08 0x20E00C8
+
 #define IOMUXC_GPIO     0x5
 
 #define GPIO4_16 112
@@ -20,10 +28,10 @@
 #define GPIO4_26 122
 #define GPIO4_27 123
 #define GPIO4_31 127
-#define GPIO5_5  133
-#define GPIO5_6  134
-#define GPIO5_7  135
-#define GPIO5_8  136
+#define GPIO5_05 133
+#define GPIO5_06 134
+#define GPIO5_07 135
+#define GPIO5_08 136
 
 void gpio_init();
 void gpio_dir(int gpio,int dir);

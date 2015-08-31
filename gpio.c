@@ -53,6 +53,13 @@ void gpio_init()
         reg_write(IOMUXC_GPIO4_17,IOMUXC_GPIO);
         reg_write(IOMUXC_GPIO4_18,IOMUXC_GPIO);
         reg_write(IOMUXC_GPIO4_19,IOMUXC_GPIO);
+	reg_write(IOMUXC_GPIO4_26,IOMUXC_GPIO);
+	reg_write(IOMUXC_GPIO4_27,IOMUXC_GPIO);
+	reg_write(IOMUXC_GPIO4_31,IOMUXC_GPIO);
+	reg_write(IOMUXC_GPIO5_05,IOMUXC_GPIO);
+	reg_write(IOMUXC_GPIO5_06,IOMUXC_GPIO);
+	reg_write(IOMUXC_GPIO5_07,IOMUXC_GPIO);
+	reg_write(IOMUXC_GPIO5_08,IOMUXC_GPIO);
 }
 
 void gpio_dir(int gpio,int dir)
