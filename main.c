@@ -9,8 +9,7 @@
 #include "mpl3115.h"
 #include "msg.h"
 
-#define SERVER "tcp.lewei50.com"
-#define PORT   9960
+char userid[36],devno[4];
 
 void *task_recv(void *arg)
 {
@@ -52,18 +51,29 @@ void *task_send(void *arg)
 
 int main(int argc,char *argv[])
 {
+	FILE *ffd;
+	char server[32];
+	int port;
 	pthread_t thread_recv,thread_send;
+	
+	ffd=fopen("./iot.conf","r");
+	if(ffd<0){
+		printf("open iot.conf error");
+		exit(1);
+	}
+	fscanf(ffd,"userid=%s\ndevno=%s\nserver=%s\nport=%d\n",userid,devno,server,&port);	
+	fclose(ffd);
 
-	sockfd=tcp_open(SERVER,PORT);
+	sockfd=tcp_open(server,port);
 
 	pthread_create(&thread_recv,NULL,task_recv,NULL);
 	pthread_create(&thread_send,NULL,task_send,NULL);
 	
-	printf("task begin.\n");
-
+	printf("iot server started....\n");
+	printf("server=%s\tport=%d\n",server,port);
 	while('q'!=getchar());
 	close(sockfd);
-
+	
 	return 0;
 }
 

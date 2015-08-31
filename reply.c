@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include "tcp.h"
 #include "json.h"
+#include "reply.h"
 
 char send_buf[1024];
 
@@ -14,8 +15,8 @@ void reply_heart_beat()
 {
 	json_object *my_object = json_object_new_object();
 	json_object_object_add(my_object, "method",json_object_new_string("update"));
-	json_object_object_add(my_object, "gatewayNo",json_object_new_string("01"));
-	json_object_object_add(my_object, "userkey", json_object_new_string("acf941838c3045488a84399c3d9b08ee"));
+	json_object_object_add(my_object, "gatewayNo",json_object_new_string(devno));
+	json_object_object_add(my_object, "userkey", json_object_new_string(userid));
 	strcpy(send_buf, json_object_to_json_string(my_object));
 	strcat(send_buf,"&^!");
 //	printf("my_object.to_string()=%s\n",send_buf);
