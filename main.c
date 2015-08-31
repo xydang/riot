@@ -82,7 +82,7 @@ int main(int argc,char *argv[])
 	
 	printf("\niot server started....\n");
 	printf("server=%s\tport=%d\n\n",server,port);
-	while('q'!=getchar());
+	while(1);
 	close(sockfd);
 	
 	return 0;

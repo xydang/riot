@@ -4,54 +4,127 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <sys/mman.h>
+#include "gpio.h"
+
+#define MAP_SIZE 4096UL
+#define MAP_MASK (MAP_SIZE - 1)
+
+unsigned long reg_read(off_t addr)
+{
+	int memfd;
+	void *map_base, *virt_addr;
+	unsigned long val;
+
+	if((memfd = open("/dev/mem", O_RDWR | O_SYNC)) == -1)
+		exit(1);
+
+	map_base = mmap(0,MAP_SIZE,PROT_READ | PROT_WRITE,MAP_SHARED,memfd,addr & ~MAP_MASK);
+	if(map_base == (void *) -1)
+                        exit(1);
+	virt_addr = map_base + (addr & MAP_MASK);
+	val=*((unsigned long *) virt_addr);
+	if(munmap(map_base, MAP_SIZE) == -1)
+		exit(1);
+	close(memfd);
+	return val;
+}
+
+void reg_write(unsigned long addr,unsigned long dat)
+{
+        int memfd;
+        void *map_base, *virt_addr;
+
+        if((memfd = open("/dev/mem", O_RDWR | O_SYNC)) == -1)
+                        exit(1);
+
+        map_base = mmap(0,MAP_SIZE,PROT_READ | PROT_WRITE,MAP_SHARED,memfd,addr & ~MAP_MASK);
+        if(map_base == (void *) -1)
+                        exit(1);
+        virt_addr = map_base + (addr & MAP_MASK);
+        *((unsigned long *) virt_addr) = dat;
+        close(memfd);
+}
 
 void gpio_init()
 {
-        system("devmem2 0x20E009C w 0x5");// enable GPIO4_16
-        system("devmem2 0x20E00A0 w 0x5");// enable GPIO4_17
-        system("devmem2 0x20E00A4 w 0x5");// enable GPIO4_18
-        system("devmem2 0x20E00A8 w 0x5");// enable GPIO4_19
-
-        system("echo 112 > /sys/class/gpio/export");
-        system("echo 113 > /sys/class/gpio/export");
-        system("echo 114 > /sys/class/gpio/export");
-        system("echo 115 > /sys/class/gpio/export");
+	/* Configure IOMUX to select GPIO mode */
+	reg_write(IOMUXC_GPIO4_16,IOMUXC_GPIO);
+        reg_write(IOMUXC_GPIO4_17,IOMUXC_GPIO);
+        reg_write(IOMUXC_GPIO4_18,IOMUXC_GPIO);
+        reg_write(IOMUXC_GPIO4_19,IOMUXC_GPIO);
 }
 
 void gpio_dir(int gpio,int dir)
 {
-        char cmd_buf[48];
-
-        if(dir)
-                sprintf(cmd_buf,"echo out > /sys/class/gpio/gpio%d/direction",gpio);
-        else
-                sprintf(cmd_buf,"echo in > /sys/class/gpio/gpio%d/direction",gpio);
-        system(cmd_buf);
+	unsigned long gdir;
+	unsigned char port;
+	
+	gpio-=96;
+	if(gpio>31){
+		gpio-=32;
+		port=5;
+		gdir=reg_read(GPIO5_GDIR);
+	}else{
+		port=4;
+		gdir=reg_read(GPIO4_GDIR);
+	}
+	
+	if(dir){
+		if(port==4)
+			reg_write(GPIO4_GDIR,gdir|(1<<gpio));
+		else
+			reg_write(GPIO5_GDIR,gdir|(1<<gpio));
+	}else{
+		if(port==4)
+			reg_write(GPIO4_GDIR,gdir&(~(1<<gpio)));
+		else
+			reg_write(GPIO5_GDIR,gdir&(~(1<<gpio)));
+	}
 }
 
 void gpio_set(int gpio,int value)
 {
-        char cmd_buf[48];
-
-        if(value)
-                sprintf(cmd_buf,"echo 1 > /sys/class/gpio/gpio%d/value",gpio);
-        else
-                sprintf(cmd_buf,"echo 0 > /sys/class/gpio/gpio%d/value",gpio);
-        system(cmd_buf);
-}
+	unsigned long dr;
+	unsigned char port;
+	
+	gpio-=96;
+	if(gpio>31){
+		gpio-=32;
+		port=5;
+		dr=reg_read(GPIO5_DR);
+	}else{
+		port=4;
+		dr=reg_read(GPIO4_DR);
+	}
+	
+	if(value){
+		if(port==4)
+			reg_write(GPIO4_DR,dr|(1<<gpio));
+		else
+			reg_write(GPIO5_DR,dr|(1<<gpio));
+	}else{
+		if(port==4)
+			reg_write(GPIO4_DR,dr&(~(1<<gpio)));
+		else
+			reg_write(GPIO5_DR,dr&(~(1<<gpio)));
+	}
+}		
 
 int gpio_get(int gpio)
 {
-        int fd,len;
-        char cmd_buf[48];
-        char ch[2];
-
-        memset(ch,0,2);
-        sprintf(cmd_buf,"/sys/class/gpio/gpio%d/value",gpio);
-        fd=open(cmd_buf,O_WRONLY);
-        len=read(fd,ch,1);
-        close(fd);
-
-        return ch[0];
+	unsigned long dr;
+	
+	gpio-=96;
+	if(gpio>31){
+		gpio-=32;
+		dr=reg_read(GPIO5_DR);
+	}else{
+		dr=reg_read(GPIO4_DR);
+	}
+	if(dr&(1<<gpio))
+		return 1;
+	else
+		return 0;
 }
 
