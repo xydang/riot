@@ -6,6 +6,7 @@
 #include "json.h"
 #include "reply.h"
 #include "gpio.h"
+#include "serial.h"
 
 void msg_handle(char *msg_buf,int len)
 {
@@ -56,6 +57,8 @@ void msg_handle(char *msg_buf,int len)
 		json_object_put(val_obj);
 	}else if(strcmp(method,"writeSerial")==0){
 		json_object *val_obj= json_object_object_get(new_obj,"p1");
+		int n=strlen(json_object_get_string(val_obj));
+		write(serialfd,json_object_get_string(val_obj),n);
 		replay_sta(1,"ok");
 		printf("write serial:%s\n",json_object_get_string(val_obj));
 		json_object_put(val_obj);
