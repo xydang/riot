@@ -70,9 +70,9 @@ int main(int argc,char *argv[])
 	int port;
 	pthread_t thread_recv,thread_send;
 	
-	ffd=fopen("./iot.conf","r");
+	ffd=fopen("/etc/iot.conf","r");
 	if(ffd<0){
-		printf("open iot.conf error");
+		printf("open /etc/iot.conf error!\n");
 		exit(1);
 	}
 	fscanf(ffd,"userid=%s\ndevno=%s\nserver=%s\nport=%d\n",userid,devno,server,&port);	
@@ -87,7 +87,9 @@ int main(int argc,char *argv[])
 	
 	printf("\niot server started....\n");
 	printf("server=%s\tport=%d\n\n",server,port);
-	while(1);
+	while(1){
+		sleep(1);
+	}
 	close(sockfd);
 	
 	return 0;
