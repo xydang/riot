@@ -13,4 +13,6 @@
 #4.通信协议
 本程序是通过TCP长连接方式更新传感器数据与反向控制。上下行的数据都是JSON格式，所以用到了一个json-c的库。[具体协议点这里]([http://www.lewei50.com/dev/doc/176)。
 #5.关于RiotBoard
-[RiotBoard](http://riotboard.org/)是英蓓特面向于高端移动设备、高端掌上电脑、高端便携式媒体播放器、游戏机、上网本、桌面一体机、便携式导航设备等领域推出的一款基于飞思卡尔（Freescale Semiconductor）i.MX 6Solo处理器的评估板，板载板载4GB4GByte eMMC、2*512MB DDR3 SDRAM， 4路串口，4路USB Host, USB OTG， LVDS，HDMI，音频输入输出，SD卡，TF卡，10M/100M/1G自适应网口，JTAG，Camera，MIPI等接口
+[RiotBoard](http://riotboard.org/)是英蓓特面向于高端移动设备、高端掌上电脑、高端便携式媒体播放器、游戏机、上网本、桌面一体机、便携式导航设备等领域推出的一款基于飞思卡尔（Freescale Semiconductor）i.MX 6Solo处理器的评估板，板载板载4GB4GByte eMMC、2*512MB DDR3 SDRAM， 4路串口，4路USB Host, USB OTG， LVDS，HDMI，音频输入输出，SD卡，TF卡，10M/100M/1G自适应网口，JTAG，Camera，MIPI等接口.
+
+
