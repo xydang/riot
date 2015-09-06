@@ -57,6 +57,11 @@ void sys_init()
 	gpio_dir(GPIO4_17,1);
 	gpio_dir(GPIO4_18,1);
 	gpio_dir(GPIO4_19,1);
+	gpio_set(GPIO4_16,1);
+	gpio_set(GPIO4_17,1);
+	gpio_set(GPIO4_18,1);
+	gpio_set(GPIO4_19,1);
+
 	char *serial_dev = "/dev/ttymxc2";
 	serialfd = serial_open(serial_dev);
 	serial_set_baud(serialfd, 115200);

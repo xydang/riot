@@ -20,34 +20,34 @@ void msg_handle(char *msg_buf,int len)
 		json_object *val_obj= json_object_object_get(new_obj,"p2");
 		if(strcmp(json_object_get_string(dev_obj),"sw0")==0){
 			if(strcmp(json_object_get_string(val_obj),"1")==0){
-				gpio_set(GPIO4_16,1);
+				gpio_set(GPIO4_16,0);
 				printf("sw0 on.\n");	
 			}else{
-				gpio_set(GPIO4_16,0);
+				gpio_set(GPIO4_16,1);
 				printf("sw0 off.\n");
 			}
 		}else if(strcmp(json_object_get_string(dev_obj),"sw1")==0){
 			if(strcmp(json_object_get_string(val_obj),"1")==0){
-				gpio_set(GPIO4_17,1);
+				gpio_set(GPIO4_17,0);
 				printf("sw1 on.\n");	
 			}else{
-				gpio_set(GPIO4_17,0);
+				gpio_set(GPIO4_17,1);
 				printf("sw1 off.\n");
 			}
 		}else if(strcmp(json_object_get_string(dev_obj),"sw2")==0){
 			if(strcmp(json_object_get_string(val_obj),"1")==0){
-				gpio_set(GPIO4_18,1);
+				gpio_set(GPIO4_18,0);
 				printf("sw2 on.\n");	
 			}else{
-				gpio_set(GPIO4_18,0);
+				gpio_set(GPIO4_18,1);
 				printf("sw2 off.\n");
 			}
 		}else if(strcmp(json_object_get_string(dev_obj),"sw3")==0){
 			if(strcmp(json_object_get_string(val_obj),"1")==0){
-				gpio_set(GPIO4_19,1);
+				gpio_set(GPIO4_19,0);
 				printf("sw3 on.\n");	
 			}else{
-				gpio_set(GPIO4_19,0);
+				gpio_set(GPIO4_19,1);
 				printf("sw3 off.\n");
 			}
 		}

@@ -8,6 +8,7 @@
 #include "tcp.h"
 #include "json.h"
 #include "reply.h"
+#include "gpio.h"
 
 char send_buf[1024];
 
@@ -52,13 +53,25 @@ void replay_sensor_list()
 	json_object *dev3_object=json_object_new_object();
 	
 	json_object_object_add(dev0_object, "id",json_object_new_string("sw0"));
-	json_object_object_add(dev0_object, "value",json_object_new_string("0"));
+	if(gpio_get(GPIO4_16)==0)
+		json_object_object_add(dev0_object, "value",json_object_new_string("1"));
+	else
+		json_object_object_add(dev0_object, "value",json_object_new_string("0"));
 	json_object_object_add(dev1_object, "id",json_object_new_string("sw1"));
-	json_object_object_add(dev1_object, "value",json_object_new_string("0"));
+	if(gpio_get(GPIO4_17)==0)
+		json_object_object_add(dev1_object, "value",json_object_new_string("1"));
+	else
+		json_object_object_add(dev1_object, "value",json_object_new_string("0"));
 	json_object_object_add(dev2_object, "id",json_object_new_string("sw2"));
-	json_object_object_add(dev2_object, "value",json_object_new_string("0"));
+	if(gpio_get(GPIO4_18)==0)
+		json_object_object_add(dev2_object, "value",json_object_new_string("1"));
+	else
+		json_object_object_add(dev2_object, "value",json_object_new_string("0"));
 	json_object_object_add(dev3_object, "id",json_object_new_string("sw3"));
-	json_object_object_add(dev3_object, "value",json_object_new_string("0"));
+	if(gpio_get(GPIO4_19)==0)
+		json_object_object_add(dev3_object, "value",json_object_new_string("1"));
+	else
+		json_object_object_add(dev3_object, "value",json_object_new_string("0"));
 	
 	json_object_array_add(my_array,dev0_object);
 	json_object_array_add(my_array,dev1_object);
